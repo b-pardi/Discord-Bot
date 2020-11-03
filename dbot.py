@@ -13,4 +13,4 @@ async def on_ready():
 
 #run bot from token, DO NOT SHARE TOKEN
 client.run(token)
-time.sleep(6)
+time.sleep(5)
