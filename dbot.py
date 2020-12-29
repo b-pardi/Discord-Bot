@@ -3,7 +3,8 @@ print(discord.__version__)
 intents = discord.Intents().all()
 
 """
-Auto roles
+#DONE#Auto roles
+role features
 auto post yt videos
 Music?
 Review documentation for functions and ideas
@@ -40,13 +41,60 @@ async def on_member_join(member):
 async def on_member_remove(member):
     print(f"{member} couldn't Pardi hard enough.")
 
-#AUTO ROLES
 """
-async def on_member_join(member):
-    role = get(member.guild.roles, name=ROLE)
-    await member.add_roles(role)
-    print(f"{member} is now a {role}")
+AUTO ROLES
 """
+# ASSIGN
+@client.event
+async def on_raw_reaction_add(payload):
+    topics = [['Minecraft', 793106223469035550, "guessilldie", " is now a Minecrafter!"],
+    ['Terraria', 793106820536467487, "terraria", " is now a 2-D Minecrafter ;)"],
+    ['Halo', 793107335475232798, "mastertea", " is now able to finish the fight"],
+    ['Phasmophobia', 793107580343812166, "ghosty", " is ghostbuster 2.0!"],
+    ['Descenders', 793107709615538197, "borisbike", " is a 2-wheeled madlad!"],
+    ['Programming', 793107751882457088, "VRPog", " is a code academy graduate maybe..."],
+    ['Nerd', 793107957935505429, "amongusstonks", " is big wrinkly bren"],
+    ['Youtuber', 793108477391274005, "youtube", " is gonna be famous one day :)"],
+    ['Streamer', 793108522006741022, "twitch", " is a little POG Champ"]]
+    message_id = payload.message_id
+    channel = client.get_channel(722970243252879420)
+
+    for topic in topics:
+        if message_id == topic[1]:
+            guild_id = payload.guild_id
+            guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
+            if (payload.emoji.name == topic[2]):
+                role = discord.utils.get(guild.roles, name=topic[0])
+                member = guild.get_member(payload.user_id)
+                await member.add_roles(role)
+                member_at = '<@' + str(member.id) + '>'
+                await channel.send(f"{member_at}" + topic[3])
+
+# UNASSIGN
+@client.event
+async def on_raw_reaction_remove(payload):
+    topics = [['Minecraft', 793106223469035550, "guessilldie", " is no longer a Minecrafter!"],
+    ['Terraria', 793106820536467487, "terraria", " is no longer a 2-D Minecrafter ;)"],
+    ['Halo', 793107335475232798, "mastertea", " is no longer able to finish the fight"],
+    ['Phasmophobia', 793107580343812166, "ghosty", " is too afraid to ghost hunt"],
+    ['Descenders', 793107709615538197, "borisbike", " crashed his bike and got injured"],
+    ['Programming', 793107751882457088, "VRPog", " dropped out"],
+    ['Nerd', 793107957935505429, "amongusstonks", " smooooth brain"],
+    ['Youtuber', 793108477391274005, "youtube", " sadly gave up :("],
+    ['Streamer', 793108522006741022, "twitch", " isn't my little POG Champ"]]
+    message_id = payload.message_id
+    channel = client.get_channel(722970243252879420)
+
+    for topic in topics:
+        if message_id == topic[1]:
+            guild_id = payload.guild_id
+            guild = discord.utils.find(lambda g : g.id == guild_id, client.guilds)
+            if (payload.emoji.name == topic[2]):
+                role = discord.utils.get(guild.roles, name=topic[0])
+                member = guild.get_member(payload.user_id)
+                await member.remove_roles(role)
+                member_at = '<@' + str(member.id) + '>'
+                await channel.send(f"{member_at}" + topic[3])
 
 """
 COMMANDS
@@ -128,6 +176,28 @@ async def _2077(ctx, member):
     await ctx.send(f"{member} Getting cock")
     await ctx.send(file=discord.File('2077.gif'))
 
+@client.command
+async def addrole(ctx, member, role):
+    channel = client.get_channel(722970243252879420)
+    guild = discord.utils.find(lambda g : g.id == discord.guild_id, client.guilds)
+    role = discord.utils.get(guild.roles, name=role)
+    member = guild.get_member(discord.user_id)
+    await member.add_roles(role)
+    member_at = '<@' + str(member.id) + '>'
+    await channel.send(f"{member_at} was granted the role, {role}")
+    return
+
+@client.command
+async def removerole(ctx, member, role):
+    channel = client.get_channel(722970243252879420)
+    guild = discord.utils.find(lambda g : g.id == discord.guild_id, client.guilds)
+    role = discord.utils.get(guild.roles, name=role)
+    member = guild.get_member(discord.user_id)
+    await member.remove_roles(role)
+    member_at = '<@' + str(member.id) + '>'
+    await channel.send(f"{member_at} lost the role, {role}")
+    return
+    
 """
 TASKS
 """
