@@ -1,18 +1,26 @@
 from imports import *
+
 print(discord.__version__)
-intents = discord.Intents().all()
 
 """
 #DONE#Auto roles
 role features
-auto post yt videos
+post streamlabs alerts in the discord
+auto post yt videos/stream
+    https://www.youtube.com/watch?v=JEQOyeGp6S4
+    https://www.youtube.com/watch?v=smJS_SU6KzY
+    yt api - https://www.youtube.com/watch?v=th5_9woFJmk
+list of greetings and departures
+inspirational quote command (massive text file list)
 Music?
+    https://www.youtube.com/watch?v=MbhXIddT2YY
 Review documentation for functions and ideas
 """#guild.members
 
 #Documentation: https://discordpy.readthedocs.io/en/latest/
 
 #establishes client for bot
+intents = discord.Intents().all()
 client = commands.Bot(command_prefix = './', intents = intents)
 
 
@@ -24,6 +32,8 @@ EVENTS
 @client.event
 async def on_ready():
     update_status.start()
+    channel = client.get_channel(722970243252879420)
+    await channel.send("Bot online")
     print("Bot ready to go")
 
 #notifies console of member leaving
@@ -39,6 +49,8 @@ async def on_member_join(member):
 #notifies console of member leaving
 @client.event
 async def on_member_remove(member):
+    guild = client.get_guild(528767443653623818)
+    channel = client.get_channel(722970243252879420)
     print(f"{member} couldn't Pardi hard enough.")
 
 """
@@ -176,7 +188,34 @@ async def _2077(ctx, member):
     await ctx.send(f"{member} Getting cock")
     await ctx.send(file=discord.File('2077.gif'))
 
-@client.command
+@client.command()
+async def joinvoice(ctx):
+    try:
+        (client.voice_clients[0].is_connected())
+        print("Voice Channel already connected")
+        await ctx.send("Already connected to voice channel you dunce")
+    except:
+        voice_channel = ctx.author.voice.channel
+        await voice_channel.connect()
+
+@client.command()
+async def leavevoice(ctx):
+    voice_channel = ctx.author.voice.channel
+    await client.voice_clients[0].disconnect()
+
+@client.command()
+async def membercount(ctx):
+    guild = client.get_guild(528767443653623818)
+    members = guild.members
+    users = 0
+    act_users = 0
+    for member in members:
+        users += 1
+        if not(member.status == discord.Status.offline):
+            act_users += 1
+    await ctx.send(f"{users} Users in the server,\n{act_users} of them are online")
+
+@client.command()
 async def addrole(ctx, member, role):
     channel = client.get_channel(722970243252879420)
     guild = discord.utils.find(lambda g : g.id == discord.guild_id, client.guilds)
@@ -187,7 +226,7 @@ async def addrole(ctx, member, role):
     await channel.send(f"{member_at} was granted the role, {role}")
     return
 
-@client.command
+@client.command()
 async def removerole(ctx, member, role):
     channel = client.get_channel(722970243252879420)
     guild = discord.utils.find(lambda g : g.id == discord.guild_id, client.guilds)
@@ -197,7 +236,25 @@ async def removerole(ctx, member, role):
     member_at = '<@' + str(member.id) + '>'
     await channel.send(f"{member_at} lost the role, {role}")
     return
+
+@client.command()
+async def inspireme(ctx):
+    with open ("quotes.txt", 'r', encoding='utf-8') as quotes:
+        all_quotes = quotes.read()
+        all_quotes2 = all_quotes.replace('--', '~')
+        quote_split = all_quotes2.split('\n\n')
+        author_split = all_quotes2.split('~')
+
+    await ctx.send(f"_{quote_split[random.randint(0,len(quote_split))]}_ ")
+
+@client.command()
+async def insultme(ctx):
+    with open ("insults.txt", 'r', encoding='utf-8') as insults:
+        all_insults = insults.read()
+        insult_split = all_insults.split('\n')
     
+    await ctx.send(f"__{insult_split[random.randint(0,len(insult_split))]}__")
+
 """
 TASKS
 """
