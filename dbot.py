@@ -1,9 +1,12 @@
 from imports import *
+#from YTapi import * <-- Doesn't work for some reason.
+import YTapi
 
 print(discord.__version__)
 
 """
 #DONE#Auto roles
+HELP COMMAND
 role features
 post streamlabs alerts in the discord
 auto post yt videos/stream
@@ -11,6 +14,7 @@ auto post yt videos/stream
     https://www.youtube.com/watch?v=smJS_SU6KzY
     yt api - https://www.youtube.com/watch?v=th5_9woFJmk
 list of greetings and departures
+wolfram aplha and weather integrations
 inspirational quote command (massive text file list)
 Music?
     https://www.youtube.com/watch?v=MbhXIddT2YY
@@ -52,6 +56,12 @@ async def on_member_remove(member):
     guild = client.get_guild(528767443653623818)
     channel = client.get_channel(722970243252879420)
     print(f"{member} couldn't Pardi hard enough.")
+
+"""
+YOUTUBE API STUFF
+"""
+
+
 
 """
 AUTO ROLES
@@ -255,6 +265,48 @@ async def insultme(ctx):
     
     await ctx.send(f"__{insult_split[random.randint(0,len(insult_split))]}__")
 
+@client.command()
+async def YTstats(ctx, user):
+    
+    youtube_member = YTapi.YoutubeMember(user, is_username=True)
+
+    try:
+        viewCount = youtube_member.get_total_view_count()
+        subscriberCount = youtube_member.get_total_subscriber_count()
+        videoCount = youtube_member.get_total_video_count()
+    except AttributeError as Atterr:
+        print(Atterr)
+        await ctx.send("Please enter valid Youtube Channel\n\
+        _**Hint:**_ _Use true channel name and not a nickname or alias_\n\
+        _**ex:**_ youtube.com/user/[TRUE CHANNEL NAME]/\n\
+            _**OR**_\n\
+        If you are under 100 subscribers use ./YTstatsID with your channel ID\n\
+        _**ex:**_ _youtube.com/channel/[CHANNEL ID]/_")
+
+    member = youtube_member.username
+    await ctx.send(f"**Youtube Stats for {member}:**\n\
+    Total Views: {viewCount}\n\
+    Subscribers: {subscriberCount}\n\
+    Uploads: {videoCount}")
+
+@client.command()
+async def YTstatsID(ctx, userID):
+    youtube_member = YTapi.YoutubeMember(userID, is_username=False)
+    try:
+        viewCount = youtube_member.get_total_view_count()
+        subscriberCount = youtube_member.get_total_subscriber_count()
+        videoCount = youtube_member.get_total_video_count()
+    except AttributeError as Atterr:
+        print(Atterr)
+        await ctx.send("Please enter valid Youtube Channel ID\n\
+        _**ex:**_ _youtube.com/channel/[CHANNEL ID]/_")
+    
+    member = youtube_member.username
+    await ctx.send(f"**Youtube Stats for {member}:**\n\
+    Total Views: {viewCount}\n\
+    Subscribers: {subscriberCount}\n\
+    Uploads: {videoCount}")
+    
 """
 TASKS
 """
@@ -292,6 +344,9 @@ async def on_command_error(ctx, error):
     if isinstance(error, MemberNotFound):
         await ctx.send("That person doesn't even exist bro wtf")
         return
+
+    # YTapi user arg missing
+    #if isinstance(error, AttributeError)
     
 
 #run bot from token, DO NOT SHARE TOKEN
